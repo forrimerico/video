@@ -4,6 +4,8 @@ import com.imooc.pojo.Users;
 import com.imooc.service.UserService;
 import com.imooc.utils.IMoocJSONResult;
 import com.imooc.utils.MD5Utils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,21 +14,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Api(value = "用户注册登录的接口", tags = {"注册和登录的controller"})
 public class RegistLoginController {
 
     @Autowired
     private UserService userService;
-
-    @RequestMapping("/hello")
-    public String Hello() {
-        return "Hello Spring Boot~";
-    }
 
     /**
      * 用户注册接口
      * @param user
      * @return
      */
+    @ApiOperation(value = "用户注册接口", notes = "用户注册的接口")
     @PostMapping("/regist")
     public IMoocJSONResult regist(@RequestBody Users user) {
         try {

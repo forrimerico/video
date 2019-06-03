@@ -3,7 +3,6 @@ package com.imooc.service;
 import com.imooc.pojo.Users;
 import org.springframework.stereotype.Service;
 
-@Service
 public interface UserService {
 
     /**

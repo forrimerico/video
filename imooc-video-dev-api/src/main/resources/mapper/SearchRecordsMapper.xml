@@ -8,11 +8,5 @@
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="content" jdbcType="VARCHAR" property="content" />
   </resultMap>
-  <resultMap id="BaseResultMap" type="com.imooc.pojo.SearchRecords">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="content" jdbcType="VARCHAR" property="content" />
-  </resultMap>
+
 </mapper>

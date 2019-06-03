@@ -5,9 +5,11 @@ import com.imooc.pojo.Users;
 import com.imooc.service.UserService;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+@Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
