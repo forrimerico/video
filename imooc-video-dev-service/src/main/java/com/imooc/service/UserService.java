@@ -10,11 +10,18 @@ public interface UserService {
      * @param username
      * @return
      */
-    public boolean queryUserNameIsExist(String username);
+    boolean queryUserNameIsExist(String username);
 
     /**
      * 保存用户对象
      * @param user
      */
-    public void saveUser(Users user);
+    void saveUser(Users user);
+
+    /**
+     * 判断密码是否正确
+     * @param user
+     * @return
+     */
+    Users queryPasswordRight(Users user) throws Exception;
 }

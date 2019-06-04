@@ -22,6 +22,7 @@ public class RegistLoginController {
 
     /**
      * 用户注册接口
+     *
      * @param user
      * @return
      */
@@ -49,7 +50,29 @@ public class RegistLoginController {
             e.printStackTrace();
             return IMoocJSONResult.errorMsg(e.getMessage());
         }
+        user.setPassword("");
+        return IMoocJSONResult.ok(user);
+    }
 
-        return IMoocJSONResult.ok();
+    @ApiOperation(value = "用户登录接口", notes = "用户登录的接口")
+    @PostMapping("login")
+    public IMoocJSONResult login(@RequestBody Users user) {
+        try {
+            // 用户名和密码不为空
+            if (StringUtils.isBlank(user.getUsername()) || StringUtils.isBlank(user.getPassword())) {
+                return IMoocJSONResult.errorMsg("用户名和密码为空！");
+            }
+            String username = user.getUsername();
+            if (!userService.queryUserNameIsExist(username)) {
+                return IMoocJSONResult.errorMsg("用户名不存在！");
+            }
+
+            if (userService.queryPasswordRight(user) != null) {
+                return IMoocJSONResult.ok();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return IMoocJSONResult.errorMsg("登录失败！");
     }
 }
