@@ -1,21 +1,25 @@
 package com.imooc.controller;
 
 import com.imooc.pojo.Users;
+import com.imooc.pojo.VO.UsersVO;
 import com.imooc.service.UserService;
 import com.imooc.utils.IMoocJSONResult;
 import com.imooc.utils.MD5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @Api(value = "用户注册登录的接口", tags = {"注册和登录的controller"})
-public class RegistLoginController {
+public class RegistLoginController extends BasicController {
 
     @Autowired
     private UserService userService;
@@ -51,7 +55,8 @@ public class RegistLoginController {
             return IMoocJSONResult.errorMsg(e.getMessage());
         }
         user.setPassword("");
-        return IMoocJSONResult.ok(user);
+
+        return IMoocJSONResult.ok(setToken(user));
     }
 
     @ApiOperation(value = "用户登录接口", notes = "用户登录的接口")
@@ -67,12 +72,25 @@ public class RegistLoginController {
                 return IMoocJSONResult.errorMsg("用户名不存在！");
             }
 
-            if (userService.queryPasswordRight(user) != null) {
-                return IMoocJSONResult.ok();
+            Users loginUser = userService.queryPasswordRight(user);
+            if (loginUser != null) {
+                return IMoocJSONResult.ok(setToken(loginUser));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return IMoocJSONResult.errorMsg("登录失败！");
+    }
+
+    private UsersVO setToken(Users user)
+    {
+        String uniqueStr = UUID.randomUUID().toString();
+        redis.set(USER_REDIS_SESSION + ":" + user.getId(), uniqueStr, 1000 * 60 * 60);
+        String b= redis.get(USER_REDIS_SESSION + ":" + user.getId());
+        UsersVO usersVO = new UsersVO();
+        BeanUtils.copyProperties(user, usersVO);
+        usersVO.setUserToken(uniqueStr);
+
+        return usersVO;
     }
 }
