@@ -6,6 +6,7 @@ import com.imooc.service.UserService;
 import com.imooc.utils.IMoocJSONResult;
 import com.imooc.utils.MD5Utils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -80,6 +81,15 @@ public class RegistLoginController extends BasicController {
             e.printStackTrace();
         }
         return IMoocJSONResult.errorMsg("登录失败！");
+    }
+
+    @ApiOperation(value = "用户注销接口", notes = "用户注销的接口")
+    @ApiImplicitParam(name="userId", value="用户Id", required = true, dataType = "String", paramType = "query")
+    @PostMapping("logout")
+    public IMoocJSONResult logout(String userId) {
+        redis.del(USER_REDIS_SESSION + ":" + userId);
+
+        return IMoocJSONResult.ok("注销成功！");
     }
 
     private UsersVO setToken(Users user)

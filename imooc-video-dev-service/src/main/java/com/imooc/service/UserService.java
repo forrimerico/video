@@ -24,4 +24,17 @@ public interface UserService {
      * @return
      */
     Users queryPasswordRight(Users user) throws Exception;
+
+    /**
+     * 更新用户信息
+     * @param users
+     */
+    void updateUserInfo(Users users);
+
+    /**
+     * 查询用户信息
+     * @param userId
+     * @return
+     */
+    Users queryUserInfo(String userId);
 }
