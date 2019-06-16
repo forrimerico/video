@@ -21,6 +21,6 @@ public class BgmController {
     @PostMapping("list")
     public IMoocJSONResult list()
     {
-        return IMoocJSONResult.ok(bgmService.quertBgmList());
+        return IMoocJSONResult.ok(bgmService.queryBgmList());
     }
 }

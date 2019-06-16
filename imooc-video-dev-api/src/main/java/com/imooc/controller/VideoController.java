@@ -1,6 +1,8 @@
 package com.imooc.controller;
 
+import com.imooc.pojo.Bgm;
 import com.imooc.service.impl.BgmServiceImpl;
+import com.imooc.utils.FfmepgOperrator;
 import com.imooc.utils.IMoocJSONResult;
 import io.swagger.annotations.*;
 import org.apache.commons.io.IOUtils;
@@ -15,11 +17,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 @RestController
 @Api(value = "视频相关业务的接口", tags = {"视频相关业务的controller"})
 @RequestMapping("/video")
-public class VideoController {
+public class VideoController extends BasicController {
 
     @Autowired
     BgmServiceImpl bgmService;
@@ -47,24 +50,21 @@ public class VideoController {
             return IMoocJSONResult.errorMsg("用户ID不能为空");
         }
 
-        String fileSpace = "E:\\dev\\product\\imoocvideodev\\imooc_resources";
-
         String uploadPathDB = "/" + userId + "/video";
 
         FileOutputStream fileOutputStream = null;
         InputStream inputStream = null;
+        String finalPath = "";
         try{
             if (file != null) {
                 String filename = file.getOriginalFilename();
                 if (StringUtils.isNotBlank(filename)) {
-                    String finalPath = fileSpace + uploadPathDB + "/" + filename;
+                    finalPath = FILESPACE + uploadPathDB + "/" + filename;
                     uploadPathDB += ("/" + filename);
                     File outFile = new File(finalPath);
-
                     if (outFile.getParentFile() != null || !outFile.getParentFile().isDirectory()) {
                         outFile.getParentFile().mkdirs();
                     }
-
                     fileOutputStream = new FileOutputStream(outFile);
                     inputStream = file.getInputStream();
                     IOUtils.copy(inputStream, fileOutputStream);
@@ -87,10 +87,23 @@ public class VideoController {
                 }
             }
         }
-//        Users user = new Users();
-//        user.setId(userId);
-//        user.setFaceImage(uploadPathDB);
-//        userService.updateUserInfo(user);
+
+        if (StringUtils.isNotBlank(bgmId)) {
+            Bgm bgm = bgmService.queryBgm(bgmId);
+            String mp3InputPath = FILESPACE + bgm.getPath();
+            FfmepgOperrator ffmepgOperrator = new FfmepgOperrator(FFMEPGPATH);
+            String uploadDB = "/" + userId + "/video/" + UUID.randomUUID().toString() + ".mp4";
+            String outputPath = FILESPACE + uploadDB;
+            System.out.println(finalPath);
+            System.out.println(mp3InputPath);
+            System.out.println(videoSecond);
+            System.out.println(outputPath);
+            try {
+                ffmepgOperrator.addBgm(finalPath, mp3InputPath, 3.0, outputPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         return IMoocJSONResult.ok(uploadPathDB);
     }

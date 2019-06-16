@@ -11,6 +11,8 @@ public interface BgmService {
      * 查询背景音乐
      * @return
      */
-    List<Bgm> quertBgmList();
+    List<Bgm> queryBgmList();
+
+    Bgm queryBgm(String id);
 
 }

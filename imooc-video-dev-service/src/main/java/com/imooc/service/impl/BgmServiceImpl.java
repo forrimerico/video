@@ -15,7 +15,14 @@ public class BgmServiceImpl implements BgmService {
     BgmMapper bgmMapper;
 
     @Override
-    public List<Bgm> quertBgmList() {
+    public List<Bgm> queryBgmList() {
         return bgmMapper.selectAll();
     }
+
+    @Override
+    public Bgm queryBgm(String id) {
+        return bgmMapper.selectByPrimaryKey(id);
+    }
+
+
 }
