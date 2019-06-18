@@ -1,7 +1,10 @@
 package com.imooc.controller;
 
+import com.imooc.enums.VideoStatusEnums;
 import com.imooc.pojo.Bgm;
+import com.imooc.pojo.Videos;
 import com.imooc.service.impl.BgmServiceImpl;
+import com.imooc.service.impl.VideoServiceImpl;
 import com.imooc.utils.FfmepgOperrator;
 import com.imooc.utils.IMoocJSONResult;
 import io.swagger.annotations.*;
@@ -17,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.UUID;
 
 @RestController
@@ -26,6 +30,9 @@ public class VideoController extends BasicController {
 
     @Autowired
     BgmServiceImpl bgmService;
+
+    @Autowired
+    VideoServiceImpl videoService;
 
 
     @ApiOperation(value = "上传视频接口", notes = "上传视频接口")
@@ -41,8 +48,8 @@ public class VideoController extends BasicController {
     public IMoocJSONResult upload(String userId,
                                   String bgmId,
                                   Double videoSecond,
-                                  Integer videoWidth,
-                                  Integer videoHeight,
+                                  int videoWidth,
+                                  int videoHeight,
                                   String videoDesc,
                                   @ApiParam(value = "短视频", required = true)
                                   MultipartFile file) {
@@ -92,8 +99,8 @@ public class VideoController extends BasicController {
             Bgm bgm = bgmService.queryBgm(bgmId);
             String mp3InputPath = FILESPACE + bgm.getPath();
             FfmepgOperrator ffmepgOperrator = new FfmepgOperrator(FFMEPGPATH);
-            String uploadDB = "/" + userId + "/video/" + UUID.randomUUID().toString() + ".mp4";
-            String outputPath = FILESPACE + uploadDB;
+            uploadPathDB = "/" + userId + "/video/" + UUID.randomUUID().toString() + ".mp4";
+            String outputPath = FILESPACE + uploadPathDB;
             System.out.println(finalPath);
             System.out.println(mp3InputPath);
             System.out.println(videoSecond);
@@ -105,6 +112,76 @@ public class VideoController extends BasicController {
             }
         }
 
-        return IMoocJSONResult.ok(uploadPathDB);
+        Videos videos = new Videos();
+        videos.setAudioId(bgmId);
+        videos.setUserId(userId);
+//        videos.setVideoSeconds(Float.parseFloat(videoSecond.toString()));
+        videos.setVideoDesc(videoDesc);
+        videos.setVideoHeight(videoHeight);
+        videos.setVideoWidth(videoWidth);
+        videos.setVideoPath(uploadPathDB);
+        videos.setStatus(VideoStatusEnums.SUCCESS.getValue());
+        videos.setCreateTime(new Date());
+
+        return IMoocJSONResult.ok(videoService.saveVideo(videos));
+    }
+
+    @ApiOperation(value = "上传视频封面接口", notes = "上传视频封面接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="userId", value="用户Id", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name="videoId", value="videoId", required = true, dataType = "String", paramType = "query"),
+    })
+    @PostMapping(value = "uploadCover", headers = "content-type=multipart/form-data")
+    public IMoocJSONResult upload(String userId,
+                                  String videoId,
+                                  @ApiParam(value = "短视频", required = true)
+                                          MultipartFile file) {
+        if (StringUtils.isBlank(userId)) {
+            return IMoocJSONResult.errorMsg("用户ID不能为空");
+        }
+
+        String uploadPathDB = "/" + userId + "/video/cover";
+
+        FileOutputStream fileOutputStream = null;
+        InputStream inputStream = null;
+        String finalPath = "";
+        try{
+            if (file != null) {
+                String filename = file.getOriginalFilename();
+                if (StringUtils.isNotBlank(filename)) {
+                    finalPath = FILESPACE + uploadPathDB + "/" + filename;
+                    uploadPathDB += ("/" + filename);
+                    File outFile = new File(finalPath);
+                    if (outFile.getParentFile() != null || !outFile.getParentFile().isDirectory()) {
+                        outFile.getParentFile().mkdirs();
+                    }
+                    fileOutputStream = new FileOutputStream(outFile);
+                    inputStream = file.getInputStream();
+                    IOUtils.copy(inputStream, fileOutputStream);
+
+                }
+            } else {
+                return IMoocJSONResult.errorMsg("上传失败！");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return IMoocJSONResult.errorMsg("上传失败！");
+        } finally {
+            if (fileOutputStream != null) {
+                try {
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return IMoocJSONResult.errorMsg("上传失败！");
+                }
+            }
+        }
+
+        Videos videos = videoService.queryVideoById(videoId);
+        videos.setCoverPath(uploadPathDB);
+        videoService.updateVideo(videos);
+
+        return IMoocJSONResult.ok();
     }
 }
