@@ -184,4 +184,18 @@ public class VideoController extends BasicController {
 
         return IMoocJSONResult.ok();
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="page", value="页码", required = false, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name="pageSize", value="一页展示数量", required = false, dataType = "Integer", paramType = "query"),
+    })
+    @ApiOperation(value = "获取视频列表", notes = "获取视频列表")
+    @PostMapping("/showAll")
+    public IMoocJSONResult list(Integer page, Integer pageSize)
+    {
+        if (page == null) page = 1;
+        if (pageSize == null) pageSize = 10;
+
+        return IMoocJSONResult.ok(videoService.getAllVideos(page, pageSize));
+    }
 }
