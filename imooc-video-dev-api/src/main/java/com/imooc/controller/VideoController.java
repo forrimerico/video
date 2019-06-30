@@ -11,10 +11,7 @@ import io.swagger.annotations.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -188,14 +185,22 @@ public class VideoController extends BasicController {
     @ApiImplicitParams({
             @ApiImplicitParam(name="page", value="页码", required = false, dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name="pageSize", value="一页展示数量", required = false, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name="isSaveRecord", value="是否保存热搜", required = false, dataType = "Integer", paramType = "query"),
     })
     @ApiOperation(value = "获取视频列表", notes = "获取视频列表")
     @PostMapping("/showAll")
-    public IMoocJSONResult list(Integer page, Integer pageSize)
+    public IMoocJSONResult list(@RequestBody Videos videos, Integer isSaveRecord, Integer page, Integer pageSize)
     {
         if (page == null) page = 1;
         if (pageSize == null) pageSize = 10;
 
-        return IMoocJSONResult.ok(videoService.getAllVideos(page, pageSize));
+        return IMoocJSONResult.ok(videoService.getAllVideos(videos, isSaveRecord, page, pageSize));
+    }
+
+    @ApiOperation(value = "获取热搜接口", notes = "获取热搜接口")
+    @PostMapping("/hot")
+    public IMoocJSONResult hot()
+    {
+        return IMoocJSONResult.ok(videoService.getSearchRecords());
     }
 }

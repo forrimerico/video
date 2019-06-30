@@ -1,5 +1,6 @@
 package com.imooc.service;
 
+import com.imooc.pojo.SearchRecords;
 import com.imooc.pojo.VO.VideosVO;
 import com.imooc.pojo.Videos;
 import com.imooc.utils.PagedResult;
@@ -14,6 +15,8 @@ public interface VideoService {
 
     void updateVideo(Videos videos);
 
-    PagedResult getAllVideos(Integer page, Integer pageSize);
+    PagedResult getAllVideos(Videos videos, Integer isSaveRecord, Integer page, Integer pageSize);
+
+    List<String> getSearchRecords();
 
 }
