@@ -203,4 +203,20 @@ public class VideoController extends BasicController {
     {
         return IMoocJSONResult.ok(videoService.getSearchRecords());
     }
+
+    @ApiOperation(value = "点赞接口", notes = "点赞接口")
+    @PostMapping("/userLike")
+    public IMoocJSONResult userLike(String userId, String videoId, String videoCreaterId)
+    {
+        videoService.addLike(userId, videoId, videoCreaterId);
+        return IMoocJSONResult.ok();
+    }
+
+    @ApiOperation(value = "取消点赞接口", notes = "取消点赞接口")
+    @PostMapping("/userUnLike")
+    public IMoocJSONResult userUnLike(String userId, String videoId, String videoCreaterId)
+    {
+        videoService.reduceLike(userId, videoId, videoCreaterId);
+        return IMoocJSONResult.ok();
+    }
 }

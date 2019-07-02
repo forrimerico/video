@@ -19,4 +19,8 @@ public interface VideoService {
 
     List<String> getSearchRecords();
 
+    void addLike(String userId, String videoId, String videoCreaterId);
+
+    void reduceLike(String userId, String videoId, String videoCreaterId);
+
 }

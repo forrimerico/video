@@ -11,4 +11,8 @@ public interface VideosMapper extends MyMapper<Videos> {
 
     List<VideosVO> queryAllVideos(@Param("videoDesc") String videoDesc);
 
+    void addVideoLikeCount(@Param("videoId") String videoId);
+
+    void reduceVideoLikeCount(@Param("videoId") String videoId);
+
 }

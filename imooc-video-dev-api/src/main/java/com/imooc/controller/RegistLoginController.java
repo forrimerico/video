@@ -50,6 +50,7 @@ public class RegistLoginController extends BasicController {
             user.setPassword(MD5Utils.getMD5Str(user.getPassword()));
             user.setFansCounts(0);
             user.setFollowCounts(0);
+            user.setReceiveLikeCounts(0);
             userService.saveUser(user);
         } catch (Exception e) {
             e.printStackTrace();
