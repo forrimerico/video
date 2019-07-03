@@ -37,4 +37,6 @@ public interface UserService {
      * @return
      */
     Users queryUserInfo(String userId);
+
+    boolean isUserLikeVideo(String userId, String videoId);
 }

@@ -1,7 +1,9 @@
 package com.imooc.service.impl;
 
+import com.imooc.mapper.UsersLikeVideoMapper;
 import com.imooc.mapper.UsersMapper;
 import com.imooc.pojo.Users;
+import com.imooc.pojo.UsersLikeVideos;
 import com.imooc.service.UserService;
 import com.imooc.utils.MD5Utils;
 import org.n3r.idworker.Sid;
@@ -11,11 +13,16 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UsersMapper usersMapper;
+
+    @Autowired
+    private UsersLikeVideoMapper usersLikeVideoMapper;
 
     @Autowired
     private Sid sid;
@@ -63,5 +70,21 @@ public class UserServiceImpl implements UserService {
         criteria.andEqualTo("id", userId);
 
         return usersMapper.selectOneByExample(userExample);
+    }
+
+    @Override
+    public boolean isUserLikeVideo(String userId, String videoId) {
+        Example userExample = new Example(UsersLikeVideos.class);
+        Example.Criteria criteria = userExample.createCriteria();
+        criteria.andEqualTo("userId", userId);
+        criteria.andEqualTo("videoId", videoId);
+
+        List<UsersLikeVideos> likeVideosList = usersLikeVideoMapper.selectByExample(userExample);
+
+        if (likeVideosList != null && likeVideosList.size() > 0) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -1,6 +1,7 @@
 package com.imooc.controller;
 
 import com.imooc.pojo.Users;
+import com.imooc.pojo.VO.PublisherVO;
 import com.imooc.pojo.VO.UsersVO;
 import com.imooc.service.UserService;
 import com.imooc.utils.IMoocJSONResult;
@@ -100,5 +101,31 @@ public class UserController extends BasicController {
         BeanUtils.copyProperties(user, usersVO);
 
         return IMoocJSONResult.ok(usersVO);
+    }
+
+    @ApiOperation(value = "查询发布者接口", notes = "查询发布者接口")
+    @PostMapping("/queryPublisher")
+    public IMoocJSONResult queryPublisher(String loginUserId, String videoId, String publishUserId)
+    {
+        if (StringUtils.isBlank(loginUserId)) {
+            return IMoocJSONResult.errorMsg("用户ID不能为空");
+        }
+        if (StringUtils.isBlank(videoId)) {
+            return IMoocJSONResult.errorMsg("videoId不能为空");
+        }
+        if (StringUtils.isBlank(publishUserId)) {
+            return IMoocJSONResult.errorMsg("publishUserId不能为空");
+        }
+        Users userInfo = userService.queryUserInfo(publishUserId);
+
+        UsersVO publisher = new UsersVO();
+        BeanUtils.copyProperties(userInfo, publisher);
+
+        boolean userLikeVideo = userService.isUserLikeVideo(loginUserId, videoId);
+        PublisherVO publisherVO = new PublisherVO();
+        publisherVO.setPublisher(publisher);
+        publisherVO.setUserLikeVideo(userLikeVideo);
+
+        return IMoocJSONResult.ok(publisherVO);
     }
 }
